@@ -1,6 +1,8 @@
 # Trade Desk
 
-Kalkulator lot, jurnal trading, dan portofolio untuk funded account. Aplikasi ini web statis tanpa server: bisa dibuka di browser, di-install ke HP sebagai aplikasi (PWA), dan dipakai sebagai Telegram Mini App dari kode yang sama.
+Kalkulator lot, jurnal trading, dan portofolio untuk funded account. Aplikasi ini web statis tanpa server. Bisa dibuka di browser, dipasang di Home Screen iPhone/Android seperti aplikasi biasa (PWA), atau dipakai sebagai Telegram Mini App.
+
+Live: https://noctaless.github.io/trade-desk/
 
 ## Fitur
 
@@ -68,7 +70,15 @@ python -m http.server 8765
 
 Untuk install ke HP: buka link di Chrome, lalu pilih menu ⋮ → **Add to Home screen**.
 
-## Pasang sebagai Telegram Mini App
+## Pasang di iPhone (disarankan)
+
+1. Buka `https://noctaless.github.io/trade-desk/` di **Safari**. Harus Safari, karena Chrome di iPhone tidak bisa memasang aplikasi web.
+2. Ketuk tombol **Bagikan** (kotak dengan panah ke atas), lalu pilih **Tambahkan ke Layar Utama** → **Tambah**.
+3. Ikon Trade Desk muncul di Home Screen. Aplikasinya terbuka layar penuh tanpa bar Safari dan tetap bisa dipakai offline (kurs memakai data terakhir yang tersimpan).
+
+Data aplikasi di Home Screen terpisah dari data Safari biasa, jadi selalu buka lewat ikon di Home Screen. iOS tidak menghapus data aplikasi Home Screen walaupun lama tidak dibuka, tapi tetap backup sesekali lewat **Akun → Salin backup**.
+
+## Pasang sebagai Telegram Mini App (opsional)
 
 Tidak perlu server atau kode bot, cukup BotFather:
 

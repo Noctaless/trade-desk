@@ -5,10 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Trade Desk</title>
   <meta name="description" content="Kalkulator lot, jurnal trading, dan portofolio untuk funded account.">
-  <meta name="theme-color" content="#15202b">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#161f28" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Trade Desk">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -29,6 +35,11 @@
   </header>
 
   <main class="wrap">
+    <div class="install-tip" id="installTip" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg>
+      <p>Pasang di iPhone: ketuk <b>Bagikan</b> di Safari, lalu pilih <b>Tambahkan ke Layar Utama</b>.</p>
+      <button type="button" class="icon-btn" id="installTipClose" aria-label="Tutup petunjuk">×</button>
+    </div>
     <!-- ============ KALKULATOR ============ -->
     <section class="tab" id="tab-calc" hidden>
       <div class="grid">
