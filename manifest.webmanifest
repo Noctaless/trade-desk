@@ -1,0 +1,13 @@
+{
+  "name": "Trade Desk",
+  "short_name": "Trade Desk",
+  "description": "Kalkulator lot, jurnal trading, dan portofolio untuk funded account.",
+  "start_url": "./#calc",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#15202b",
+  "theme_color": "#15202b",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
