@@ -22,7 +22,27 @@ Kalkulator lot, jurnal trading, dan portofolio untuk funded account. Aplikasi in
 - Kalender P/L harian.
 - Rincian per instrumen, setup, sesi (Asia/London/New York), hari, dan arah.
 
-**Akun**: aturan prop firm, risiko default, komisi, backup/restore (JSON), dan export CSV.
+**Akun**
+- Bisa banyak akun, satu per fase prop firm (Step 1, Step 2, Funded), karena balance tiap fase mulai dari awal. Jurnal, kalkulator, dan portofolio selalu memakai akun yang sedang aktif.
+- Preset **The5ers 100K** (lihat tabel di bawah) atau atur sendiri.
+- Risiko default, komisi, lot step, jam pergantian hari, backup/restore (JSON), dan export CSV.
+
+## Aturan The5ers 100K (preset)
+
+| | Step 1 | Step 2 | Funded |
+|---|---|---|---|
+| Profit target | 10% | 5% | 10% |
+| Max loss | $10.000 (statis) | $10.000 | $10.000 |
+| Daily loss | 3% | 3% | 3% |
+| Leverage | 1:100 | 1:100 | 1:100 |
+| Consistency rule | – | – | 50% |
+| Withdraw target / cap | – | – | $250 / $2.000 |
+
+Cara aplikasi membaca aturannya:
+- **Daily loss 3%** dihitung dari balance awal hari server. Aplikasi hanya tahu balance dari trade yang sudah ditutup, jadi equity floating di MT5 tetap perlu dipantau sendiri.
+- **Hari server** berganti jam 17:00 New York, yaitu 04:00 WIB (saat musim panas AS) atau 05:00 WIB (saat musim dingin AS). Bisa diganti ke tengah malam jam HP di tab Akun.
+- **Consistency 50%**: profit hari terbaik tidak boleh lebih dari 50% total profit. Aplikasi menampilkan berapa profit tambahan yang dibutuhkan supaya syarat ini terpenuhi.
+- Angka diambil dari halaman checkout The5ers. Cek lagi definisi lengkapnya di FAQ The5ers kalau ada yang berubah.
 
 ## Data
 
@@ -35,7 +55,7 @@ Semua data tersimpan di `localStorage` perangkat yang dipakai. Tidak ada server 
 Modul JavaScript tidak bisa dibuka langsung lewat `file://`, jadi jalankan server lokal:
 
 ```bash
-cd trade-desk
+cd Bots/trade-desk
 python -m http.server 8765
 # buka http://localhost:8765
 ```
@@ -63,7 +83,7 @@ Opsional: kirim `/newapp` di BotFather untuk membuat link langsung seperti `t.me
 - Contract size: forex 100.000 unit, XAUUSD 100 oz, XAGUSD 5.000 oz. Cek di MT4/MT5 (klik kanan simbol → Specification) dan ubah di **Kalkulator → Spesifikasi kontrak** kalau broker kamu berbeda.
 - Lot dibulatkan ke bawah sesuai lot step, jadi risiko tidak pernah melebihi target.
 - Spread dan swap tidak dihitung di kalkulator. Komisi dihitung kalau diisi di tab Akun.
-- Hari dihitung pakai jam perangkat. Prop firm biasanya reset daily loss pakai jam server (sering tengah malam CE(S)T).
+- Pergantian hari default pakai jam server MT5 (GMT+2/+3), bukan jam HP.
 
 ## Struktur
 

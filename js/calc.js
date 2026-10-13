@@ -1,7 +1,7 @@
 // Kalkulator lot tab.
 import { PAIRS, CONV, needsConversion, marketRate, quoteToUSD } from "./instruments.js";
 import { sizePosition, computeStats } from "./core.js";
-import { state, update, contractFor } from "./store.js";
+import { state, update, contractFor, cfg, accountTrades } from "./store.js";
 import { $, num, fmt, usd, pct, fillPairSelect, toast, copyText } from "./ui.js";
 
 const RISKS = [0.25, 0.5, 1, 1.5, 2];
@@ -82,7 +82,7 @@ function loadPair() {
 }
 
 export function renderCalc() {
-  const st = state.settings;
+  const st = cfg();
   const p = PAIRS[state.calc.pair] || PAIRS.XAUUSD;
   if (document.activeElement !== $("c-risk")) $("c-risk").value = state.calc.risk ?? st.defaultRisk;
   const riskPct = num($("c-risk").value);
@@ -99,10 +99,10 @@ export function renderCalc() {
       "Kurs perkiraan karena kurs online belum didapat. Ganti dengan kurs " + c.pair + " di MT4/MT5.";
   }
 
-  const stats = computeStats(state.trades, st);
+  const stats = computeStats(accountTrades(), st);
   const riskBalance = st.riskBase === "current" ? stats.balance : st.startBalance;
-  $("c-basis").textContent = "Risiko dihitung dari " + (st.riskBase === "current" ? "balance sekarang " : "balance awal ") + usd(riskBalance, 0) +
-    " · leverage 1:" + st.leverage + (st.commission > 0 ? " · komisi " + usd(st.commission) + "/lot" : "") + ". Ubah di tab Akun.";
+  $("c-basis").textContent = st.name + " · risiko dihitung dari " + (st.riskBase === "current" ? "balance sekarang " : "balance awal ") + usd(riskBalance, 0) +
+    " · leverage 1:" + st.leverage + (st.commission > 0 ? " · komisi " + usd(st.commission) + "/lot" : "") + " · daily loss " + st.dailyLossPct + "%. Ubah di tab Akun.";
 
   const pr = state.calc.prices[p.s] || {};
   const entry = num(pr.entry), sl = num(pr.sl), tp = num(pr.tp);

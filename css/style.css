@@ -253,6 +253,8 @@ details[open] summary { margin-bottom: 14px; }
 .tbl tr:last-child td { border-bottom: 0; }
 
 /* ---------- settings ---------- */
+.acct-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.acct-row select { flex: 1 1 200px; width: auto; }
 .danger { border-top: 1px solid var(--line); padding-top: 14px; }
 
 /* ---------- dialog ---------- */

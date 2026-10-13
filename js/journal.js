@@ -1,7 +1,7 @@
 // Jurnal tab: trade list and the trade form dialog.
 import { PAIRS, quoteToUSD } from "./instruments.js";
 import { pnlAt, riskOf, localStamp, dayKey, WEEKDAYS } from "./core.js";
-import { state, update, newId, contractFor } from "./store.js";
+import { state, update, newId, contractFor, cfg, accountTrades, activeAccount } from "./store.js";
 import { convRateFor } from "./calc.js";
 import { $, num, fmt, usd, cls, esc, fillPairSelect, toast, armButton } from "./ui.js";
 
@@ -85,7 +85,7 @@ function recalc() {
   const tp = num($("t-tp").value);
   let info = "";
   if (risk > 0) {
-    info = "Risiko kalau SL kena: " + usd(risk) + " (" + fmt(risk / state.settings.startBalance * 100, 2) + "% dari balance awal)";
+    info = "Risiko kalau SL kena: " + usd(risk) + " (" + fmt(risk / cfg().startBalance * 100, 2) + "% dari balance awal)";
     if (tp > 0 && t.sl > 0) info += " · R:R 1 : " + fmt(Math.abs(tp - t.entry) / Math.abs(t.entry - t.sl), 2);
   } else if (t.lots > 0 && t.entry > 0) {
     info = "Tanpa SL, risiko trade ini tidak bisa dihitung dan R-multiple tidak tercatat.";
@@ -129,6 +129,7 @@ function saveTrade() {
   const closed = $("t-closed").checked;
   const t = {
     id: editingId || newId(),
+    accountId: editingId ? state.trades.find(x => x.id === editingId).accountId : activeAccount().id,
     pair: p.s, dir,
     lots: v("t-lots"), entry: v("t-entry"), sl: v("t-sl"), tp: v("t-tp"),
     openedAt: $("t-opened").value,
@@ -162,7 +163,7 @@ function saveTrade() {
 }
 
 export function renderJournal() {
-  const trades = state.trades;
+  const trades = accountTrades();
   // filter options
   const months = [...new Set(trades.map(t => (t.openedAt || "").slice(0, 7)).filter(Boolean))].sort().reverse();
   const pairs = [...new Set(trades.map(t => t.pair))].sort();

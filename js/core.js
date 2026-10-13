@@ -57,6 +57,18 @@ export function localStamp(d = new Date()) {
   return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes());
 }
 export const dayKey = s => (s || "").slice(0, 10);
+
+// MT5 prop-firm servers mostly run on "New York close" time (GMT+2 winter / GMT+3 summer):
+// the trading day rolls over at 17:00 New York, i.e. 04:00 or 05:00 WIB.
+const NY = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+export function serverDayKey(stamp) {
+  const d = new Date(stamp);
+  if (isNaN(d)) return dayKey(stamp);
+  const p = Object.fromEntries(NY.formatToParts(d).map(x => [x.type, x.value]));
+  const t = new Date(Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour % 24, +p.minute) + 7 * 3600e3);
+  return t.getUTCFullYear() + "-" + pad(t.getUTCMonth() + 1) + "-" + pad(t.getUTCDate());
+}
+export const dayFnFor = s => (s.dayReset === "local" ? dayKey : serverDayKey);
 export const WEEKDAYS = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
 /** Trading session from the open time (stored as local time, classified in UTC). */
@@ -74,7 +86,9 @@ const isClosed = t => t.status === "closed" && Number.isFinite(t.pnl);
 const closeTime = t => t.closedAt || t.openedAt || "";
 
 // ---------- statistics ----------
-export function computeStats(trades, s, today = dayKey(localStamp())) {
+export function computeStats(trades, s, now = localStamp()) {
+  const dayOf = dayFnFor(s);
+  const today = dayOf(now);
   const start = s.startBalance;
   const closed = trades.filter(isClosed).sort((a, b) => closeTime(a).localeCompare(closeTime(b)));
   const open = trades.filter(t => t.status !== "closed");
@@ -87,7 +101,7 @@ export function computeStats(trades, s, today = dayKey(localStamp())) {
   let dayStart = start;
 
   for (const t of closed) {
-    const dk = dayKey(closeTime(t));
+    const dk = dayOf(closeTime(t));
     if (dk < today) dayStart = bal + t.pnl;
     bal += t.pnl;
     peak = Math.max(peak, bal);
@@ -117,6 +131,24 @@ export function computeStats(trades, s, today = dayKey(localStamp())) {
   const targetAmt = start * (s.profitTargetPct || 0) / 100;
   const net = bal - start;
 
+  // Consistency rule: the best day may be at most X% of total profit.
+  let consistency = null;
+  if (s.consistencyPct > 0) {
+    const bestDay = Math.max(0, ...Object.values(daily).map(d => d.pnl));
+    const limitPct = s.consistencyPct;
+    consistency = {
+      limitPct, bestDay,
+      ratio: net > 0 ? bestDay / net * 100 : null,
+      ok: bestDay === 0 || (net > 0 && bestDay / net * 100 <= limitPct + 1e-9),
+      // total profit needed so the best day is within the limit
+      needed: bestDay > 0 ? bestDay * 100 / limitPct : 0,
+    };
+    consistency.shortfall = Math.max(0, consistency.needed - net);
+  }
+  const payout = s.payoutMin > 0 || s.payoutCap > 0
+    ? { min: s.payoutMin || 0, cap: s.payoutCap || 0, eligible: net >= (s.payoutMin || 0) && net > 0 && (!consistency || consistency.ok), amount: Math.max(0, s.payoutCap > 0 ? Math.min(net, s.payoutCap) : net) }
+    : null;
+
   return {
     start, balance: bal, net, netPct: net / start * 100, peak, maxDD, maxDDPct, curve, daily,
     n: closed.length, nWin: wins.length, nLoss: losses.length, nBe: closed.length - wins.length - losses.length,
@@ -129,7 +161,7 @@ export function computeStats(trades, s, today = dayKey(localStamp())) {
     best: closed.length ? Math.max(...closed.map(t => t.pnl)) : null,
     worst: closed.length ? Math.min(...closed.map(t => t.pnl)) : null,
     maxWinStreak: maxW, maxLossStreak: maxL,
-    tradingDays: Object.keys(daily).length,
+    tradingDays: Object.keys(daily).length, consistency, payout,
     planRate: planned.length ? planned.filter(t => t.plan === "yes").length / planned.length * 100 : null,
     openCount: open.length, openRisk,
     today: {

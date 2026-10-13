@@ -171,12 +171,23 @@
 
     <!-- ============ AKUN ============ -->
     <section class="tab" id="tab-settings" hidden>
+      <section class="panel">
+        <div class="panel-head">
+          <p class="section-label">Akun aktif</p>
+          <span class="hint">Setiap fase (Step 1, Step 2, Funded) dibuat sebagai akun sendiri karena balance-nya mulai dari awal.</span>
+        </div>
+        <div class="acct-row">
+          <select id="s-account" aria-label="Pilih akun aktif"></select>
+          <select id="s-preset" aria-label="Preset akun baru"></select>
+          <button type="button" class="btn primary" id="s-newAcc">+ Akun baru</button>
+        </div>
+      </section>
+
       <form class="panel" id="s-form" autocomplete="off">
-        <p class="section-label">Akun funded</p>
+        <p class="section-label">Akun ini</p>
         <div class="fields">
           <div class="field"><label for="s-name">Nama akun</label><input id="s-name" type="text" maxlength="40"></div>
-          <div class="field"><label for="s-phase">Fase</label>
-            <select id="s-phase"><option>Challenge</option><option>Verification</option><option>Funded</option></select></div>
+          <div class="field"><label for="s-phase">Fase</label><input id="s-phase" type="text" maxlength="30" list="s-phases"><datalist id="s-phases"><option value="Evaluasi Step 1"></option><option value="Evaluasi Step 2"></option><option value="Funded"></option></datalist></div>
           <div class="field"><label for="s-start">Balance awal</label><div class="with-unit"><input id="s-start" type="number" step="any" min="0" inputmode="decimal"><span class="unit">USD</span></div></div>
           <div class="field"><label for="s-leverage">Leverage 1 :</label><input id="s-leverage" type="number" step="1" min="1" inputmode="numeric"></div>
         </div>
@@ -185,20 +196,29 @@
           <div class="field"><label for="s-target">Profit target</label><div class="with-unit"><input id="s-target" type="number" step="0.5" min="0" inputmode="decimal"><span class="unit">%</span></div><span class="hint">Isi 0 kalau tidak ada target.</span></div>
           <div class="field"><label for="s-daily">Batas daily loss</label><div class="with-unit"><input id="s-daily" type="number" step="0.5" min="0" inputmode="decimal"><span class="unit">%</span></div></div>
           <div class="field"><label for="s-dailyBase">Daily loss dihitung dari</label>
-            <select id="s-dailyBase"><option value="initial">Balance awal</option><option value="dayStart">Balance awal hari itu</option></select></div>
+            <select id="s-dailyBase"><option value="initial">Balance awal akun</option><option value="dayStart">Balance awal hari itu</option></select></div>
           <div class="field"><label for="s-max">Batas max loss</label><div class="with-unit"><input id="s-max" type="number" step="0.5" min="0" inputmode="decimal"><span class="unit">%</span></div></div>
           <div class="field"><label for="s-maxType">Jenis max loss</label>
             <select id="s-maxType"><option value="static">Statis (dari balance awal)</option><option value="trailing">Trailing (ikut balance tertinggi)</option></select></div>
+          <div class="field"><label for="s-consistency">Consistency rule</label><div class="with-unit"><input id="s-consistency" type="number" step="5" min="0" max="100" inputmode="decimal"><span class="unit">%</span></div><span class="hint">Profit hari terbaik maksimal sekian persen dari total profit. 0 = tidak ada.</span></div>
+          <div class="field"><label for="s-payoutMin">Withdraw target</label><div class="with-unit"><input id="s-payoutMin" type="number" step="any" min="0" inputmode="decimal"><span class="unit">USD</span></div></div>
+          <div class="field"><label for="s-payoutCap">Withdraw cap</label><div class="with-unit"><input id="s-payoutCap" type="number" step="any" min="0" inputmode="decimal"><span class="unit">USD</span></div></div>
         </div>
-        <p class="section-label">Kebiasaan trading</p>
+        <div class="danger"><button type="button" class="btn danger-btn" id="s-delAcc">Hapus akun ini beserta trade-nya</button></div>
+      </form>
+
+      <form class="panel" id="s-prefs" autocomplete="off">
+        <p class="section-label">Kebiasaan trading (semua akun)</p>
         <div class="fields">
           <div class="field"><label for="s-risk">Risiko default</label><div class="with-unit"><input id="s-risk" type="number" step="0.05" min="0" inputmode="decimal"><span class="unit">%</span></div></div>
           <div class="field"><label for="s-riskBase">Risiko % dihitung dari</label>
             <select id="s-riskBase"><option value="initial">Balance awal</option><option value="current">Balance sekarang</option></select></div>
           <div class="field"><label for="s-comm">Komisi / lot (pulang-pergi)</label><div class="with-unit"><input id="s-comm" type="number" step="any" min="0" inputmode="decimal"><span class="unit">USD</span></div></div>
           <div class="field"><label for="s-step">Lot step</label><input id="s-step" type="number" step="0.01" min="0.01" inputmode="decimal"></div>
+          <div class="field"><label for="s-dayReset">Pergantian hari trading</label>
+            <select id="s-dayReset"><option value="server">Jam server MT5 (04:00/05:00 WIB)</option><option value="local">Tengah malam jam HP</option></select></div>
         </div>
-        <p class="hint">Tersimpan otomatis. Hari dihitung pakai jam di HP/laptop kamu. Prop firm biasanya reset harian pakai jam server, jadi cek aturan mereka.</p>
+        <p class="hint">Tersimpan otomatis. Server MT5 prop firm umumnya pakai jam GMT+2/+3 (tutup sesi New York), jadi daily loss reset jam 04:00 WIB saat musim panas AS dan 05:00 WIB saat musim dingin.</p>
       </form>
 
       <section class="panel">
@@ -220,7 +240,7 @@
           </div>
         </details>
         <div class="danger">
-          <button type="button" class="btn danger-btn" id="s-reset">Hapus semua trade</button>
+          <button type="button" class="btn danger-btn" id="s-reset">Hapus semua trade akun ini</button>
         </div>
         <p class="hint" id="s-status" role="status"></p>
       </section>

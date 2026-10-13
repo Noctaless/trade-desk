@@ -1,6 +1,6 @@
 // Portofolio tab: prop-firm rule meters, balance curve, statistics, P/L calendar, breakdowns.
-import { computeStats, breakdown, localStamp, dayKey, pad } from "./core.js";
-import { state, update } from "./store.js";
+import { computeStats, breakdown, localStamp, dayFnFor, pad } from "./core.js";
+import { state, update, cfg, accountTrades } from "./store.js";
 import { $, fmt, usd, pct, cls, esc } from "./ui.js";
 
 const MONTHS = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
@@ -8,8 +8,8 @@ let chart = null;
 let calMonth = localStamp().slice(0, 7);
 
 export function initPortfolio() {
-  $("p-calPrev").addEventListener("click", () => { calMonth = shiftMonth(calMonth, -1); renderCalendar(computeStats(state.trades, state.settings)); });
-  $("p-calNext").addEventListener("click", () => { calMonth = shiftMonth(calMonth, 1); renderCalendar(computeStats(state.trades, state.settings)); });
+  $("p-calPrev").addEventListener("click", () => { calMonth = shiftMonth(calMonth, -1); renderCalendar(computeStats(accountTrades(), cfg())); });
+  $("p-calNext").addEventListener("click", () => { calMonth = shiftMonth(calMonth, 1); renderCalendar(computeStats(accountTrades(), cfg())); });
   $("p-breakSeg").addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;
     update(s => { s.ui.breakdown = b.dataset.k; }, { silent: true });
@@ -23,7 +23,7 @@ function shiftMonth(m, by) {
 }
 
 export function renderPortfolio() {
-  const s = computeStats(state.trades, state.settings);
+  const s = computeStats(accountTrades(), cfg());
   renderRules(s);
   renderChart(s);
   renderStats(s);
@@ -37,7 +37,7 @@ function bar(p, tone) {
 }
 
 function renderRules(s) {
-  const st = state.settings;
+  const st = cfg();
   const cards = [];
   cards.push('<div class="rule"><span class="section-label">' + esc(st.name) + " · " + esc(st.phase) + "</span>" +
     '<span class="big">' + usd(s.balance) + "</span>" +
@@ -66,6 +66,25 @@ function renderRules(s) {
       '<div class="row"><span>Jarak ke batas · terpakai</span><b>' + pct(used, 0) + " dari " + usd(s.maxLoss.limit, 0) + "</b></div>" +
       '<div class="row"><span>Balance tidak boleh di bawah</span><b>' + usd(s.maxLoss.floor, 0) + "</b></div></div>");
   }
+  if (s.consistency) {
+    const c = s.consistency;
+    const ratioTxt = c.ratio === null ? "—" : pct(c.ratio, 0);
+    cards.push('<div class="rule ' + (c.ok ? "" : "warn") + '"><span class="section-label">Consistency rule ' + pct(c.limitPct, 0) + "</span>" +
+      '<span class="big ' + (c.ok ? "pos" : "") + '">' + (c.ok ? "Aman" : "Belum") + "</span>" +
+      bar(c.ratio === null ? (c.bestDay > 0 ? 100 : 0) : c.ratio / c.limitPct * 100, c.ok ? "good" : "warn") +
+      '<div class="row"><span>Hari terbaik / total profit</span><b>' + usd(c.bestDay, 0) + " · " + ratioTxt + "</b></div>" +
+      '<div class="row"><span>' + (c.ok ? "Total profit minimal" : "Perlu profit tambahan") + "</span><b>" + (c.ok ? usd(c.needed, 0) : usd(c.shortfall, 0)) + "</b></div></div>");
+  }
+
+  if (s.payout) {
+    const p = s.payout;
+    cards.push('<div class="rule"><span class="section-label">Withdraw</span>' +
+      '<span class="big ' + (p.eligible ? "pos" : "") + '">' + (p.eligible ? usd(p.amount, 0) : "Belum bisa") + "</span>" +
+      bar(p.min > 0 ? s.net / p.min * 100 : 0, p.eligible ? "good" : "") +
+      '<div class="row"><span>Minimal profit untuk withdraw</span><b>' + usd(p.min, 0) + "</b></div>" +
+      (p.cap > 0 ? '<div class="row"><span>Maksimal per withdraw</span><b>' + usd(p.cap, 0) + "</b></div>" : "") +
+      (s.consistency && !s.consistency.ok ? '<div class="row"><span>Syarat consistency belum terpenuhi</span></div>' : "") + "</div>");
+  }
   $("p-rules").innerHTML = cards.join("");
 }
 
@@ -82,7 +101,7 @@ function renderChart(s) {
   const datasets = [
     { label: "Balance", data: s.curve.map(p => p.bal), borderColor: c.brass, backgroundColor: c.soft, fill: true, tension: 0.15, pointRadius: s.curve.length > 60 ? 0 : 3, pointHoverRadius: 5, borderWidth: 2 },
   ];
-  if (state.settings.maxLossPct > 0) {
+  if (cfg().maxLossPct > 0) {
     datasets.push({ label: "Batas max loss", data: s.curve.map(p => p.floor), borderColor: c.sell, borderDash: [6, 4], borderWidth: 1.5, pointRadius: 0, stepped: true, fill: false });
   }
   if (s.target) {
@@ -135,7 +154,7 @@ function renderCalendar(s) {
   const y = +calMonth.slice(0, 4), m = +calMonth.slice(5, 7) - 1;
   const days = new Date(y, m + 1, 0).getDate();
   const lead = (new Date(y, m, 1).getDay() + 6) % 7; // Monday first
-  const today = dayKey(localStamp());
+  const today = dayFnFor(cfg())(localStamp());
   let monthNet = 0;
   const cells = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"].map(d => '<div class="cal-h">' + d + "</div>");
   for (let i = 0; i < lead; i++) cells.push('<div class="cal-d blank"></div>');
@@ -153,7 +172,7 @@ function renderCalendar(s) {
 function renderBreakdown() {
   const by = state.ui.breakdown || "pair";
   document.querySelectorAll("#p-breakSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.k === by)));
-  const rows = breakdown(state.trades, by);
+  const rows = breakdown(accountTrades(), by);
   const head = { pair: "Instrumen", setup: "Setup", session: "Sesi", weekday: "Hari", dir: "Arah" }[by];
   $("p-break").innerHTML = "<thead><tr><th>" + head + "</th><th>Trade</th><th>Win rate</th><th>Net P/L</th><th>Rata-rata R</th></tr></thead><tbody>" +
     (rows.length ? rows.map(r => "<tr><td>" + esc(r.key) + "</td><td>" + r.n + "</td><td>" + pct(r.winRate, 0) + '</td><td class="' + cls(r.net) + '">' + usd(r.net, 2, true) +
