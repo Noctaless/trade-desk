@@ -51,23 +51,23 @@
             </div>
             <div class="field">
               <label for="c-risk">Risiko per trade</label>
-              <div class="with-unit"><input id="c-risk" type="number" step="0.05" min="0" inputmode="decimal"><span class="unit">%</span></div>
+              <div class="with-unit"><input id="c-risk" type="text" inputmode="decimal" autocomplete="off"><span class="unit">%</span></div>
             </div>
           </div>
           <div class="chips" id="c-riskChips" aria-label="Pilihan cepat risiko"></div>
 
           <div class="prices">
             <p class="section-label">Harga</p>
-            <div class="price-row"><label for="c-tp"><span class="dot tp"></span>TP</label><input id="c-tp" type="number" step="any" inputmode="decimal" placeholder="opsional"></div>
-            <div class="price-row"><label for="c-entry"><span class="dot en"></span>Entry</label><input id="c-entry" type="number" step="any" inputmode="decimal"></div>
-            <div class="price-row"><label for="c-sl"><span class="dot sl"></span>SL</label><input id="c-sl" type="number" step="any" inputmode="decimal"></div>
+            <div class="price-row"><label for="c-tp"><span class="dot tp"></span>TP</label><input id="c-tp" type="text" inputmode="decimal" autocomplete="off" placeholder="opsional"></div>
+            <div class="price-row"><label for="c-entry"><span class="dot en"></span>Entry</label><input id="c-entry" type="text" inputmode="decimal" autocomplete="off"></div>
+            <div class="price-row"><label for="c-sl"><span class="dot sl"></span>SL</label><input id="c-sl" type="text" inputmode="decimal" autocomplete="off"></div>
           </div>
 
           <div class="conv" id="c-convBox" hidden>
             <div class="field">
               <label for="c-conv" id="c-convLabel">Kurs konversi</label>
               <div class="conv-row">
-                <input id="c-conv" type="number" step="any" inputmode="decimal">
+                <input id="c-conv" type="text" inputmode="decimal" autocomplete="off">
                 <button type="button" class="btn ghost sm" id="c-convAuto">Pakai otomatis</button>
               </div>
               <span class="hint" id="c-convHint"></span>
@@ -79,7 +79,7 @@
             <div class="fields">
               <div class="field">
                 <label for="c-contract">Contract size</label>
-                <input id="c-contract" type="number" step="any" min="0" inputmode="decimal">
+                <input id="c-contract" type="text" inputmode="decimal" autocomplete="off">
                 <span class="hint" id="c-contractHint"></span>
               </div>
             </div>
@@ -199,21 +199,21 @@
         <div class="fields">
           <div class="field"><label for="s-name">Nama akun</label><input id="s-name" type="text" maxlength="40"></div>
           <div class="field"><label for="s-phase">Fase</label><input id="s-phase" type="text" maxlength="30" list="s-phases"><datalist id="s-phases"><option value="Evaluasi Step 1"></option><option value="Evaluasi Step 2"></option><option value="Funded"></option></datalist></div>
-          <div class="field"><label for="s-start">Balance awal</label><div class="with-unit"><input id="s-start" type="number" step="any" min="0" inputmode="decimal"><span class="unit">USD</span></div></div>
-          <div class="field"><label for="s-leverage">Leverage 1 :</label><input id="s-leverage" type="number" step="1" min="1" inputmode="numeric"></div>
+          <div class="field"><label for="s-start">Balance awal</label><div class="with-unit"><input id="s-start" type="text" inputmode="decimal" autocomplete="off"><span class="unit">USD</span></div></div>
+          <div class="field"><label for="s-leverage">Leverage 1 :</label><input id="s-leverage" type="text" inputmode="numeric" autocomplete="off"></div>
         </div>
         <p class="section-label">Aturan prop firm</p>
         <div class="fields">
-          <div class="field"><label for="s-target">Profit target</label><div class="with-unit"><input id="s-target" type="number" step="0.5" min="0" inputmode="decimal"><span class="unit">%</span></div><span class="hint">Isi 0 kalau tidak ada target.</span></div>
-          <div class="field"><label for="s-daily">Batas daily loss</label><div class="with-unit"><input id="s-daily" type="number" step="0.5" min="0" inputmode="decimal"><span class="unit">%</span></div></div>
+          <div class="field"><label for="s-target">Profit target</label><div class="with-unit"><input id="s-target" type="text" inputmode="decimal" autocomplete="off"><span class="unit">%</span></div><span class="hint">Isi 0 kalau tidak ada target.</span></div>
+          <div class="field"><label for="s-daily">Batas daily loss</label><div class="with-unit"><input id="s-daily" type="text" inputmode="decimal" autocomplete="off"><span class="unit">%</span></div></div>
           <div class="field"><label for="s-dailyBase">Daily loss dihitung dari</label>
             <select id="s-dailyBase"><option value="initial">Balance awal akun</option><option value="dayStart">Balance awal hari itu</option></select></div>
-          <div class="field"><label for="s-max">Batas max loss</label><div class="with-unit"><input id="s-max" type="number" step="0.5" min="0" inputmode="decimal"><span class="unit">%</span></div></div>
+          <div class="field"><label for="s-max">Batas max loss</label><div class="with-unit"><input id="s-max" type="text" inputmode="decimal" autocomplete="off"><span class="unit">%</span></div></div>
           <div class="field"><label for="s-maxType">Jenis max loss</label>
             <select id="s-maxType"><option value="static">Statis (dari balance awal)</option><option value="trailing">Trailing (ikut balance tertinggi)</option></select></div>
-          <div class="field"><label for="s-consistency">Consistency rule</label><div class="with-unit"><input id="s-consistency" type="number" step="5" min="0" max="100" inputmode="decimal"><span class="unit">%</span></div><span class="hint">Profit hari terbaik maksimal sekian persen dari total profit. 0 = tidak ada.</span></div>
-          <div class="field"><label for="s-payoutMin">Withdraw target</label><div class="with-unit"><input id="s-payoutMin" type="number" step="any" min="0" inputmode="decimal"><span class="unit">USD</span></div></div>
-          <div class="field"><label for="s-payoutCap">Withdraw cap</label><div class="with-unit"><input id="s-payoutCap" type="number" step="any" min="0" inputmode="decimal"><span class="unit">USD</span></div></div>
+          <div class="field"><label for="s-consistency">Consistency rule</label><div class="with-unit"><input id="s-consistency" type="text" inputmode="decimal" autocomplete="off"><span class="unit">%</span></div><span class="hint">Profit hari terbaik maksimal sekian persen dari total profit. 0 = tidak ada.</span></div>
+          <div class="field"><label for="s-payoutMin">Withdraw target</label><div class="with-unit"><input id="s-payoutMin" type="text" inputmode="decimal" autocomplete="off"><span class="unit">USD</span></div></div>
+          <div class="field"><label for="s-payoutCap">Withdraw cap</label><div class="with-unit"><input id="s-payoutCap" type="text" inputmode="decimal" autocomplete="off"><span class="unit">USD</span></div></div>
         </div>
         <div class="danger"><button type="button" class="btn danger-btn" id="s-delAcc">Hapus akun ini beserta trade-nya</button></div>
       </form>
@@ -221,11 +221,11 @@
       <form class="panel" id="s-prefs" autocomplete="off">
         <p class="section-label">Kebiasaan trading (semua akun)</p>
         <div class="fields">
-          <div class="field"><label for="s-risk">Risiko default</label><div class="with-unit"><input id="s-risk" type="number" step="0.05" min="0" inputmode="decimal"><span class="unit">%</span></div></div>
+          <div class="field"><label for="s-risk">Risiko default</label><div class="with-unit"><input id="s-risk" type="text" inputmode="decimal" autocomplete="off"><span class="unit">%</span></div></div>
           <div class="field"><label for="s-riskBase">Risiko % dihitung dari</label>
             <select id="s-riskBase"><option value="initial">Balance awal</option><option value="current">Balance sekarang</option></select></div>
-          <div class="field"><label for="s-comm">Komisi / lot (pulang-pergi)</label><div class="with-unit"><input id="s-comm" type="number" step="any" min="0" inputmode="decimal"><span class="unit">USD</span></div></div>
-          <div class="field"><label for="s-step">Lot step</label><input id="s-step" type="number" step="0.01" min="0.01" inputmode="decimal"></div>
+          <div class="field"><label for="s-comm">Komisi / lot (pulang-pergi)</label><div class="with-unit"><input id="s-comm" type="text" inputmode="decimal" autocomplete="off"><span class="unit">USD</span></div></div>
+          <div class="field"><label for="s-step">Lot step</label><input id="s-step" type="text" inputmode="decimal" autocomplete="off"></div>
           <div class="field"><label for="s-dayReset">Pergantian hari trading</label>
             <select id="s-dayReset"><option value="server">Jam server MT5 (04:00/05:00 WIB)</option><option value="local">Tengah malam jam HP</option></select></div>
         </div>
@@ -273,22 +273,22 @@
               <button type="button" data-v="BUY">BUY</button>
               <button type="button" data-v="SELL">SELL</button>
             </div></div>
-          <div class="field"><label for="t-lots">Lot</label><input id="t-lots" type="number" step="0.01" min="0" inputmode="decimal" required></div>
+          <div class="field"><label for="t-lots">Lot</label><input id="t-lots" type="text" inputmode="decimal" autocomplete="off" required></div>
           <div class="field"><label for="t-opened">Waktu open</label><input id="t-opened" type="datetime-local" required></div>
         </div>
         <div class="fields three">
-          <div class="field"><label for="t-entry">Entry</label><input id="t-entry" type="number" step="any" inputmode="decimal" required></div>
-          <div class="field"><label for="t-sl">SL</label><input id="t-sl" type="number" step="any" inputmode="decimal"></div>
-          <div class="field"><label for="t-tp">TP</label><input id="t-tp" type="number" step="any" inputmode="decimal"></div>
+          <div class="field"><label for="t-entry">Entry</label><input id="t-entry" type="text" inputmode="decimal" autocomplete="off" required></div>
+          <div class="field"><label for="t-sl">SL</label><input id="t-sl" type="text" inputmode="decimal" autocomplete="off"></div>
+          <div class="field"><label for="t-tp">TP</label><input id="t-tp" type="text" inputmode="decimal" autocomplete="off"></div>
         </div>
         <p class="hint" id="t-riskInfo"></p>
 
         <label class="check"><input type="checkbox" id="t-closed"> Posisi sudah ditutup</label>
         <div id="t-closeBox" class="close-box" hidden>
           <div class="fields three">
-            <div class="field"><label for="t-exit">Harga exit</label><input id="t-exit" type="number" step="any" inputmode="decimal"></div>
+            <div class="field"><label for="t-exit">Harga exit</label><input id="t-exit" type="text" inputmode="decimal" autocomplete="off"></div>
             <div class="field"><label for="t-closedAt">Waktu close</label><input id="t-closedAt" type="datetime-local"></div>
-            <div class="field"><label for="t-pnl">P/L bersih</label><div class="with-unit"><input id="t-pnl" type="number" step="any" inputmode="decimal"><span class="unit">USD</span></div></div>
+            <div class="field"><label for="t-pnl">P/L bersih</label><div class="with-unit"><input id="t-pnl" type="text" inputmode="decimal" autocomplete="off"><span class="unit">USD</span></div></div>
           </div>
           <div class="quick-exit">
             <button type="button" class="btn ghost sm" id="t-hitTp">Kena TP</button>

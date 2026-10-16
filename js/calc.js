@@ -73,8 +73,6 @@ function loadPair() {
   $("c-pair").value = p.s;
   const pr = state.calc.prices[p.s] || {};
   $("c-entry").value = pr.entry ?? ""; $("c-sl").value = pr.sl ?? ""; $("c-tp").value = pr.tp ?? "";
-  const stepAttr = (1 / 10 ** p.digits).toFixed(p.digits);
-  ["c-entry", "c-sl", "c-tp"].forEach(id => ($(id).step = stepAttr));
   $("c-contract").value = contractFor(p);
   $("c-contractHint").textContent = "Default " + p.s + ": " + p.contract.toLocaleString("en-US") + ". Cek di MT4/MT5: klik kanan simbol → Specification.";
   $("c-convBox").hidden = !needsConversion(p);

@@ -74,18 +74,7 @@ $("installTipClose").addEventListener("click", () => {
 });
 
 refreshRates();
-document.addEventListener("visibilitychange", () => { if (!document.hidden) { // "Add to Home Screen" hint: only in iPhone/iPad Safari, not when already installed or inside Telegram.
-const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-const installed = navigator.standalone === true || matchMedia("(display-mode: standalone)").matches;
-let tipDismissed = false;
-try { tipDismissed = localStorage.getItem("tradedesk.tipDismissed") === "1"; } catch (e) {}
-if (isIOS && !installed && !inTelegram && !tipDismissed) $("installTip").hidden = false;
-$("installTipClose").addEventListener("click", () => {
-  $("installTip").hidden = true;
-  try { localStorage.setItem("tradedesk.tipDismissed", "1"); } catch (e) {}
-});
-
-refreshRates(); renderVisible(); } });
+document.addEventListener("visibilitychange", () => { if (!document.hidden) { refreshRates(); renderVisible(); } });
 
 if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
   navigator.serviceWorker.register("sw.js").catch(() => {});

@@ -44,7 +44,7 @@ export function initJournal() {
     recalc();
   }));
   ["t-lots", "t-tp", "t-exit"].forEach(id => $(id).addEventListener("input", recalc));
-  $("t-pair").addEventListener("change", () => { setPriceStep(); recalc(); });
+  $("t-pair").addEventListener("change", recalc);
   $("t-pnl").addEventListener("input", () => { pnlTouched = $("t-pnl").value.trim() !== ""; });
   $("t-hitTp").addEventListener("click", () => quickExit("t-tp"));
   $("t-hitSl").addEventListener("click", () => quickExit("t-sl"));
@@ -60,12 +60,6 @@ export function initJournal() {
 function setDir(v) {
   dir = v;
   document.querySelectorAll("#t-dirSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === v)));
-}
-
-function setPriceStep() {
-  const p = PAIRS[$("t-pair").value];
-  const step = (1 / 10 ** p.digits).toFixed(p.digits);
-  ["t-entry", "t-sl", "t-tp", "t-exit"].forEach(id => ($(id).step = step));
 }
 
 function quickExit(srcId) {
@@ -105,7 +99,6 @@ export function openTradeDialog(prefill, id) {
   const d = t || { pair: state.calc.pair, dir: "BUY", openedAt: localStamp(), status: "open", ...prefill };
   $("t-title").textContent = t ? "Edit trade" : "Trade baru";
   $("t-pair").value = d.pair in PAIRS ? d.pair : "XAUUSD";
-  setPriceStep();
   setDir(d.dir || "BUY");
   const set = (elId, v) => ($(elId).value = v === undefined || v === null || Number.isNaN(v) ? "" : v);
   set("t-lots", d.lots); set("t-entry", d.entry); set("t-sl", d.sl); set("t-tp", d.tp);

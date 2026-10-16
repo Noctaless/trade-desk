@@ -3,8 +3,22 @@ import { GROUPS } from "./instruments.js";
 
 export const $ = id => document.getElementById(id);
 
+/**
+ * Parse a number typed by hand. Accepts both decimal separators (iPhone/Android keyboards in
+ * Indonesian locale type "199,512"), and thousands separators ("4.105,50", "4,105.50", "100 000").
+ */
 export const num = v => {
-  const n = parseFloat(String(v ?? "").replace(",", "."));
+  if (typeof v === "number") return Number.isFinite(v) ? v : NaN;
+  let s = String(v ?? "").trim().replace(/[\s']/g, "");
+  const lastComma = s.lastIndexOf(","), lastDot = s.lastIndexOf(".");
+  if (lastComma >= 0 && lastDot >= 0) {
+    // both present: the one that comes last is the decimal separator
+    s = lastComma > lastDot ? s.replace(/\./g, "").replace(",", ".") : s.replace(/,/g, "");
+  } else if (lastComma >= 0) {
+    s = s.replace(",", ".");
+  }
+  if (!/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s)) return NaN;
+  const n = parseFloat(s);
   return Number.isFinite(n) ? n : NaN;
 };
 

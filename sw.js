@@ -1,6 +1,6 @@
 // Offline support. App files: network first (so updates show up right away), cache as fallback.
 // CDN scripts and fonts: cache first. FX rate APIs: never cached here (the app keeps its own copy).
-const CACHE = "trade-desk-v2";
+const CACHE = "trade-desk-v3";
 const SHELL = ["./", "index.html", "css/style.css", "js/main.js", "js/store.js", "js/core.js", "js/instruments.js",
   "js/rates.js", "js/ui.js", "js/calc.js", "js/journal.js", "js/portfolio.js", "js/settings.js", "manifest.webmanifest", "icon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png"];
 const CDN = ["cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com"];
